@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
@@ -8,8 +8,6 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,7 +18,15 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply text-base overflow-hidden;
+  font-family: var(--font-montserrat);
+  color: var(--color-foreground);
+  background-color: #0e0f0f;
+
+  @media (max-width: 1200px) {
+    font-size: 16px;
+  }
+  @media (max-width: 992px) {
+    font-size: 14px;
+  }
 }
