@@ -8,7 +8,7 @@ import { Original_Surfer } from 'next/font/google'
 import { authService } from '@/services/auth.service'
 
 const options: CreateAxiosDefaults = {
-  baseURL: process.env.BACKEND_URL,
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
   headers: {
     'Content-Type': 'application/json'
   },

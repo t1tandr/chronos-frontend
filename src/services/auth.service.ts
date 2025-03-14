@@ -8,7 +8,7 @@ export const authService = {
     if (response.data.accessToken) {
       saveTokenStorage(response.data.accessToken)
     }
-
+    console.log(response.status)
     return response
   },
 
