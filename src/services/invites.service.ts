@@ -2,7 +2,7 @@ import { axiosWithAuth } from '@/api/interceptors'
 import { IInviteDto } from '@/types/invite.types'
 
 class InviteService {
-  private BASE_URL = `${process.env.VUE_APP_API_URL}/invites`
+  private BASE_URL = `/invites`
 
   async createInvite(dto: IInviteDto) {
     return await axiosWithAuth.post(`${this.BASE_URL}/create`, dto)

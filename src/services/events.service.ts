@@ -2,7 +2,7 @@ import { axiosWithAuth } from '@/api/interceptors'
 import { IEventDto } from '@/types/event.types'
 
 class EventService {
-  private BASE_URL = `${process.env.VUE_APP_API_URL}/events`
+  private BASE_URL = `/events`
 
   async createEvent(dto: IEventDto) {
     return await axiosWithAuth.post(`${this.BASE_URL}/create`, dto)

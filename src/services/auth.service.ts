@@ -1,15 +1,22 @@
 import { axiosClassic } from '@/api/interceptors'
 import { removeTokenStorage, saveTokenStorage } from './auth-token.service'
+import { IAuthResponse } from '@/types/user.types'
 
 export const authService = {
   async main(type: 'login' | 'registration', data: any) {
-    const response = await axiosClassic.post(`/auth/${type}`, data)
+    try {
+      const response = await axiosClassic.post<IAuthResponse>(
+        `/auth/${type}`,
+        data
+      )
 
-    if (response.data.accessToken) {
-      saveTokenStorage(response.data.accessToken)
+      if (response.data.accessToken) {
+        saveTokenStorage(response.data.accessToken)
+      }
+      return response.data
+    } catch (e: any) {
+      throw new Error(e.response.data.message)
     }
-    console.log(response.status)
-    return response
   },
 
   async getNewTokens() {

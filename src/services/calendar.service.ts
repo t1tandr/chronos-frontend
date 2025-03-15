@@ -1,11 +1,19 @@
 import { axiosWithAuth } from '@/api/interceptors'
-import { ICalendarDto } from '@/types/calendar.types'
+import { ICalendar, ICalendarDto } from '@/types/calendar.types'
 
 class CalendarService {
-  private BASE_URL = `${process.env.BACKEND_URL}/calendars`
+  private BASE_URL = `/calendars`
 
-  async createCalendar(userId: string, dto: ICalendarDto) {
+  async createCalendar(dto: ICalendarDto) {
     return await axiosWithAuth.post(`${this.BASE_URL}/create`, dto)
+  }
+
+  async getMyCalendars() {
+    return await axiosWithAuth.get<ICalendar[]>(`${this.BASE_URL}`)
+  }
+
+  async getParticipantCalendars() {
+    return await axiosWithAuth.get<ICalendar[]>(`${this.BASE_URL}/participants`)
   }
 
   async updateCalendar(id: string, dto: ICalendarDto) {
