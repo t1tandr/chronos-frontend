@@ -1,17 +1,11 @@
+import { IUser } from '@/types/user.types'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-type UserType = {
-  id: number
-  name: string
-  email: string
-  country?: string | null
-} | null
-
 interface UserState {
-  user: UserType
+  user: IUser | null
   isLoading: boolean
-  setUser: (user: UserType) => void
+  setUser: (user: IUser) => void
   logout: () => void
 }
 
@@ -20,7 +14,7 @@ export const userStore = create<UserState>()(
     set => ({
       user: null,
       isLoading: false,
-      setUser: (user: UserType) => set({ user }),
+      setUser: (user: IUser) => set({ user }),
       logout: () =>
         set({
           user: null,

@@ -11,6 +11,8 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { userStore } from '@/store/userStore'
+import { IAuthResponse } from '@/types/user.types'
 
 const loginScheme = z.object({
   email: z.string().email('Invalid email'),
@@ -25,6 +27,8 @@ type LoginFormType = z.infer<typeof loginScheme>
 type RegisterFormType = z.infer<typeof registerScheme>
 
 export function Auth() {
+  const { setUser } = userStore()
+
   const [isLogin, setIsLogin] = useState(true)
 
   const {
@@ -40,14 +44,18 @@ export function Auth() {
 
   const { push } = useRouter()
 
-  const { mutate } = useMutation({
+  const { mutate } = useMutation<IAuthResponse>({
     mutationKey: ['auth'],
     mutationFn: data =>
       authService.main(isLogin ? 'login' : 'registration', data),
-    onSuccess() {
+    onSuccess: data => {
+      setUser(data.user)
       toast.success('Success')
       reset()
       push('/')
+    },
+    onError: e => {
+      toast.error(e.message)
     }
   })
 

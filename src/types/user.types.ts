@@ -1,3 +1,5 @@
+import { string } from 'zod'
+
 export interface IAuthDto {
   email: string
   password: string
@@ -15,4 +17,16 @@ export interface IUpdateUserDto {
   email?: string
   oldPassword?: string
   newPassword?: string
+}
+
+export interface IUser {
+  id: string
+  name: string
+  email: string
+  country: string | null
+}
+
+export interface IAuthResponse {
+  user: IUser
+  accessToken: string
 }
