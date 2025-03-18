@@ -14,4 +14,18 @@ export interface IEventDto {
   color?: string
 }
 
+export interface IEvent {
+  id: string
+  name: string
+  description?: string
+  date: string
+  duration: number
+  category?: 'ARRANGEMENT' | 'REMINDER' | 'TASK'
+  color: string
+  creator: {
+    id: string
+    name: string
+  }
+}
+
 export interface IUpdateEventDto extends Partial<IEventDto> {}

@@ -3,7 +3,7 @@ import { IUser } from '@/types/user.types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Field } from '../ui/fields/Field'
 import { Button } from '../ui/buttons/Button'
-import { useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 interface EditProfileModalProps {
@@ -26,31 +26,41 @@ export function EditProfileModal({
     }
   })
 
-  const { mutate } = useMutation({
+  const { mutate } = useMutation<any>({
     mutationFn: (data: any) => userService.updateUser(user.id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['profile', user.id])
+      queryClient.invalidateQueries({ queryKey: ['profile', user.id] })
       toast.success('Profile updated')
       onClose()
     }
   })
 
+  const onSubmit: SubmitHandler<any> = data => {
+    mutate(data)
+  }
+
   return (
-    <div className='fixed inset-0 bg-black/50 flex items-center justify-center'>
+    <div className='fixed inset-0 bg-black/90 flex items-center justify-center'>
       <div className='bg-sidebar p-6 rounded-lg w-[400px]'>
         <h2 className='text-xl font-bold mb-4'>Edit Profile</h2>
-        <form onSubmit={handleSubmit(mutate)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Field
             {...register('name')}
+            id='name'
             label='Name'
+            placeholder='Name'
           />
           <Field
             {...register('email')}
             label='Email'
+            id='email'
+            placeholder='Email'
             type='email'
           />
           <Field
             {...register('country')}
+            id='country'
+            placeholder='Country'
             label='Country'
           />
 

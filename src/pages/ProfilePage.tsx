@@ -3,24 +3,42 @@
 import { ProfileInfo } from '@/components/profile/ProfileInfo'
 import { ProfileCalendars } from '@/components/profile/ProfileCalendars'
 import { userService } from '@/services/user.service'
-import { useQuery } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
+import { calendarService } from '@/services/calendar.service'
 
 export default function ProfilePage() {
-  const { id } = useParams()
+  const params = useParams()
+  const id = params?.['id']
 
-  const { data: profile, isLoading } = useQuery({
-    queryKey: ['profile', id],
-    queryFn: () => userService.getUserWithCalendars(id as string)
+  const [
+    { data: user, isLoading: isUserLoading },
+    { data: calendars, isLoading: isCalendarsLoading }
+  ] = useQueries({
+    queries: [
+      {
+        queryKey: ['user', id],
+        queryFn: () => userService.getUserById(id as string)
+      },
+      {
+        queryKey: ['calendars', id],
+        queryFn: () => calendarService.getUserCalendars(id as string)
+      }
+    ]
   })
 
-  if (isLoading) return <div>Loading...</div>
-  if (!profile) return <div>User not found</div>
+  if (isUserLoading || isCalendarsLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (!user || !calendars) {
+    return <div>User not found</div>
+  }
 
   return (
-    <div className='p-layout'>
-      <ProfileInfo user={profile.user} />
-      <ProfileCalendars calendars={profile.calendars} />
+    <div className='p-layout p-8'>
+      <ProfileInfo user={user.data} />
+      <ProfileCalendars calendars={calendars.data} />
     </div>
   )
 }

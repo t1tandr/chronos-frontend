@@ -1,6 +1,7 @@
 'use client'
 
 import { CalendarList } from '@/components/calendar/CalendarList'
+import { CreateCalendarModal } from '@/components/calendar/CreateCalendarModal'
 import { Button } from '@/components/ui/buttons/Button'
 import { calendarService } from '@/services/calendar.service'
 import { useQuery } from '@tanstack/react-query'
@@ -26,7 +27,7 @@ export default function DashboardPage() {
       <div className='flex gap-20 mt-10 items-center mb-8'>
         <h1 className='text-2xl font-bold'>My Calendars</h1>
         <Button
-          className='flex items-center'
+          className='flex items-center cursor-pointer'
           onClick={() => setIsModalOpen(true)}
         >
           <Plus className='w-4 h-4 mr-2' />
@@ -54,12 +55,12 @@ export default function DashboardPage() {
         </section>
       </div>
 
-      {/* {isModalOpen && (
+      {isModalOpen && (
         <CreateCalendarModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
         />
-      )} */}
+      )}
     </div>
   )
 }
