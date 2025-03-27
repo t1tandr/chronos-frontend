@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Search } from '../ui/fields/Search'
 import { Notifications } from './Notifications'
 import { ProfileSection } from './ProfileSection'
+import { SearchCalendars } from './SearchCalendar'
 
 export function Header() {
   const { user } = userStore()
@@ -20,9 +21,7 @@ export function Header() {
             CHRONOS
           </Link>
 
-          <div className='flex-1 max-w-xl mx-4'>
-            <Search />
-          </div>
+          <SearchCalendars />
 
           <div className='flex items-center gap-4'>
             <Notifications />

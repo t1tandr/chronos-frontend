@@ -7,14 +7,16 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { X } from 'lucide-react'
+import { IEvent } from '@/types/event.types'
 
 const createEventSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
   description: z.string().optional(),
-  date: z.string(),
+  startDate: z.string(),
+  startTime: z.string(),
   duration: z.number().min(1, 'Duration must be at least 1 minute'),
   color: z.string().optional(),
-  category: z.enum(['MEETING', 'TASK', 'REMINDER']).optional()
+  category: z.enum(['ARRANGMENT', 'TASK', 'REMINDER']).optional()
 })
 
 type CreateEventFormType = z.infer<typeof createEventSchema>
@@ -23,32 +25,102 @@ interface CreateEventModalProps {
   calendarId: string
   isOpen: boolean
   onClose: () => void
+  event?: IEvent
+  initialDate?: {
+    date: string
+    time?: string
+  } | null
 }
 
 export function CreateEventModal({
   calendarId,
   isOpen,
-  onClose
+  onClose,
+  event,
+  initialDate
 }: CreateEventModalProps) {
   const queryClient = useQueryClient()
-
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    reset
   } = useForm<CreateEventFormType>({
-    resolver: zodResolver(createEventSchema)
+    resolver: zodResolver(createEventSchema),
+    defaultValues: event
+      ? {
+          name: event.name,
+          description: event.description,
+          startDate: new Date(event.date).toISOString().split('T')[0],
+          startTime: new Date(event.date).toTimeString().slice(0, 5),
+          duration: event.duration,
+          color: event.color,
+          category: event.category
+        }
+      : initialDate
+        ? {
+            startDate: initialDate.date,
+            startTime: initialDate.time || '00:00',
+            duration: 60,
+            color: '#3788d8'
+          }
+        : undefined
   })
 
-  const { mutate } = useMutation({
-    mutationFn: (data: CreateEventFormType) =>
-      eventService.createEvent({ ...data, calendarId }),
+  const { mutate: createMutation } = useMutation({
+    mutationFn: (data: CreateEventFormType) => {
+      const dateTime = new Date(`${data.startDate}T${data.startTime}`)
+      return eventService.createEvent({
+        name: data.name,
+        description: data.description,
+        date: dateTime.toISOString(),
+        duration: data.duration,
+        color: data.color,
+        category: data.category,
+        calendarId
+      })
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries(['events', calendarId])
+      queryClient.invalidateQueries({ queryKey: ['events', calendarId] })
       toast.success('Event created successfully')
+      reset()
       onClose()
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to create event')
     }
   })
+
+  const { mutate: updateMutation } = useMutation({
+    mutationFn: (data: CreateEventFormType) => {
+      const dateTime = new Date(`${data.startDate}T${data.startTime}`)
+      return eventService.updateEvent(event!.id, {
+        name: data.name,
+        description: data.description,
+        date: dateTime.toISOString(),
+        duration: data.duration,
+        color: data.color,
+        category: data.category,
+        calendarId
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events', calendarId] })
+      toast.success('Event updated successfully')
+      onClose()
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to update event')
+    }
+  })
+
+  const onSubmit = (data: CreateEventFormType) => {
+    if (event) {
+      updateMutation(data)
+    } else {
+      createMutation(data)
+    }
+  }
 
   return (
     <div className='fixed inset-0 bg-black/90 flex items-center justify-center z-50'>
@@ -62,7 +134,7 @@ export function CreateEventModal({
 
         <h2 className='text-xl font-bold mb-4'>Create Event</h2>
 
-        <form onSubmit={handleSubmit(data => mutate(data))}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Field
             {...register('name')}
             id='name'
@@ -80,18 +152,29 @@ export function CreateEventModal({
             placeholder='Enter event description'
           />
 
-          <Field
-            {...register('date')}
-            placeholder='Select Date and Time'
-            id='date'
-            type='datetime-local'
-            label='Date and Time'
-            error={errors.date?.message}
-          />
+          <div className='grid grid-cols-2 gap-4'>
+            <Field
+              {...register('startDate')}
+              placeholder='Date'
+              id='startDate'
+              type='date'
+              label='Date'
+              error={errors.startDate?.message}
+            />
+
+            <Field
+              {...register('startTime')}
+              placeholder='Time'
+              id='startTime'
+              type='time'
+              label='Time'
+              error={errors.startTime?.message}
+            />
+          </div>
 
           <Field
             {...register('duration', { valueAsNumber: true })}
-            placeholder='Enter Duration'
+            placeholder='Duration'
             id='duration'
             type='number'
             label='Duration (minutes)'
@@ -100,18 +183,18 @@ export function CreateEventModal({
 
           <Field
             {...register('color')}
+            placeholder='Color'
             id='color'
-            placeholder='Select Color'
             type='color'
             label='Color'
           />
 
           <select
             {...register('category')}
-            className='w-full mb-4 p-2 rounded'
+            className='w-full mb-4 p-2 rounded bg-transparent border border-border'
           >
             <option value=''>Select Category</option>
-            <option value='MEETING'>Meeting</option>
+            <option value='ARRANGMENT'>Meeting</option>
             <option value='TASK'>Task</option>
             <option value='REMINDER'>Reminder</option>
           </select>
@@ -123,7 +206,7 @@ export function CreateEventModal({
             >
               Cancel
             </Button>
-            <Button type='submit'>Create</Button>
+            <Button type='submit'>{event ? 'Update' : 'Create'}</Button>
           </div>
         </form>
       </div>

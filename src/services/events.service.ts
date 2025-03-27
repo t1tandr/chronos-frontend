@@ -1,23 +1,35 @@
 import { axiosWithAuth } from '@/api/interceptors'
-import { IEventDto } from '@/types/event.types'
+import { IEvent, IEventDto } from '@/types/event.types'
 
 class EventService {
-  private BASE_URL = `/events`
+  private BASE_URL = '/events'
 
   async createEvent(dto: IEventDto) {
-    return await axiosWithAuth.post(`${this.BASE_URL}/create`, dto)
+    const { data } = await axiosWithAuth.post<IEvent>(
+      `${this.BASE_URL}/create`,
+      dto
+    )
+    return data
   }
 
   async updateEvent(id: string, dto: IEventDto) {
-    return await axiosWithAuth.put(`${this.BASE_URL}/${id}`, dto)
+    const { data } = await axiosWithAuth.put<IEvent>(
+      `${this.BASE_URL}/${id}`,
+      dto
+    )
+    return data
   }
 
   async deleteEvent(id: string) {
-    return await axiosWithAuth.delete(`${this.BASE_URL}/${id}`)
+    const { data } = await axiosWithAuth.delete<IEvent>(
+      `${this.BASE_URL}/${id}`
+    )
+    return data
   }
 
   async getEvent(id: string) {
-    return await axiosWithAuth.get(`${this.BASE_URL}/${id}`)
+    const { data } = await axiosWithAuth.get<IEvent>(`${this.BASE_URL}/${id}`)
+    return data
   }
 }
 

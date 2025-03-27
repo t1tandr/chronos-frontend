@@ -1,7 +1,8 @@
 'use client'
 
-import { CalendarList } from '@/components/calendar/CalendarList'
+import { CalendarsList } from '@/components/calendar/CalendarList'
 import { CreateCalendarModal } from '@/components/calendar/CreateCalendarModal'
+import { MainCalendar } from '@/components/calendar/MainCalendar'
 import { Button } from '@/components/ui/buttons/Button'
 import { calendarService } from '@/services/calendar.service'
 import { useQuery } from '@tanstack/react-query'
@@ -10,49 +11,58 @@ import { useState } from 'react'
 
 export default function DashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedCalendar, setSelectedCalendar] = useState<string | null>(null)
 
   const { data: myCalendars, isLoading: isLoadingMy } = useQuery({
     queryKey: ['my-calendars'],
     queryFn: () => calendarService.getMyCalendars()
   })
 
-  const { data: participatingCalendars, isLoading: isLoadingParticipating } =
-    useQuery({
-      queryKey: ['participating-calendars'],
-      queryFn: () => calendarService.getParticipantCalendars()
-    })
+  const { data: publicCalendars, isLoading: isLoadingPublic } = useQuery({
+    queryKey: ['public-calendars'],
+    queryFn: () => calendarService.getParticipantCalendars()
+  })
 
   return (
-    <div className='container p-layout px-6'>
-      <div className='flex gap-20 mt-10 items-center mb-8'>
-        <h1 className='text-2xl font-bold'>My Calendars</h1>
+    <div className='flex h-[calc(100vh-64px)]'>
+      <div className='w-80 border-r border-border bg-sidebar p-4'>
         <Button
-          className='flex items-center cursor-pointer'
+          className='w-full flex items-center justify-center mb-6'
           onClick={() => setIsModalOpen(true)}
         >
           <Plus className='w-4 h-4 mr-2' />
           Create Calendar
         </Button>
-      </div>
 
-      <div className='grid gap-8'>
-        <section>
-          <h2 className='text-xl font-semibold mb-4'>My Calendars</h2>
-          <CalendarList
+        <div className='space-y-6'>
+          <CalendarsList
+            title='My Calendars'
             calendars={myCalendars?.data || []}
             isLoading={isLoadingMy}
+            onSelect={setSelectedCalendar}
+            selectedId={selectedCalendar}
           />
-        </section>
 
-        <section>
-          <h2 className='text-xl font-semibold mb-4'>
-            Participating Calendars
-          </h2>
-          <CalendarList
-            calendars={participatingCalendars?.data || []}
-            isLoading={isLoadingParticipating}
+          <CalendarsList
+            title='Public Calendars'
+            calendars={publicCalendars?.data || []}
+            isLoading={isLoadingPublic}
+            onSelect={setSelectedCalendar}
+            selectedId={selectedCalendar}
           />
-        </section>
+        </div>
+      </div>
+
+      <div className='flex-1 p-6'>
+        <MainCalendar
+          calendar={
+            [
+              ...(myCalendars?.data || []),
+              ...(publicCalendars?.data || [])
+            ].find(cal => cal.id === selectedCalendar) || null
+          }
+          selectedCalendarId={selectedCalendar}
+        />
       </div>
 
       {isModalOpen && (

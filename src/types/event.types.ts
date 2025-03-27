@@ -4,28 +4,42 @@ export enum EventCategory {
   TASK = 'TASK'
 }
 
-export interface IEventDto {
-  name: string
-  description?: string
-  startDate: Date
-  duration: number
-  category?: EventCategory
-  calendarId: string
-  color?: string
-}
-
 export interface IEvent {
   id: string
   name: string
   description?: string
   date: string
   duration: number
-  category?: 'ARRANGEMENT' | 'REMINDER' | 'TASK'
-  color: string
-  creator: {
-    id: string
-    name: string
+  color?: string
+  category?: 'ARRANGMENT' | 'TASK' | 'REMINDER'
+  calendarId: string
+  creatorId?: string
+}
+
+export interface IEventResponse {
+  id: string
+  title: string
+  start: string
+  end: string
+  backgroundColor: string
+  extendedProps: {
+    description?: string
+    category?: 'ARRANGMENT' | 'TASK' | 'REMINDER'
+    creator: {
+      id: string
+      name: string
+    }
   }
+}
+
+export interface IEventDto {
+  name: string
+  description?: string
+  date: string // ISO string
+  duration: number
+  color?: string
+  category?: 'ARRANGMENT' | 'TASK' | 'REMINDER'
+  calendarId: string
 }
 
 export interface IUpdateEventDto extends Partial<IEventDto> {}

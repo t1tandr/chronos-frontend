@@ -15,9 +15,6 @@ export function CalendarCard({ calendar }: CalendarCardProps) {
       {calendar.description && (
         <p className='text-sm text-gray-400 mb-4'>{calendar.description}</p>
       )}
-      {/* <div className='text-xs text-gray-500'>
-        {calendar.participants.length} participants
-      </div> */}
     </Link>
   )
 }

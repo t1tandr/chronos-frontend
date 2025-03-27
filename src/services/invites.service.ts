@@ -1,11 +1,22 @@
 import { axiosWithAuth } from '@/api/interceptors'
-import { IInviteDto } from '@/types/invite.types'
+import { IInvite, IInviteDto } from '@/types/invite.types'
 
 class InviteService {
   private BASE_URL = `/invites`
 
-  async createInvite(dto: IInviteDto) {
-    return await axiosWithAuth.post(`${this.BASE_URL}/create`, dto)
+  async createInvite(calendarId: string, dto: IInviteDto) {
+    const { data } = await axiosWithAuth.post(
+      `${this.BASE_URL}/${calendarId}/create`,
+      dto
+    )
+    return data
+  }
+
+  async getInvitesForCalendar(calendarId: string) {
+    const { data } = await axiosWithAuth.get(
+      `${this.BASE_URL}/calendar/${calendarId}`
+    )
+    return data
   }
 
   async acceptInvite(id: string) {
@@ -17,11 +28,8 @@ class InviteService {
   }
 
   async getInvitesForUser() {
-    return await axiosWithAuth.get(`${this.BASE_URL}/user`)
-  }
-
-  async getInvitesForCalendar(calendarId: string) {
-    return await axiosWithAuth.get(`${this.BASE_URL}/calendar/${calendarId}`)
+    const { data } = await axiosWithAuth.get<IInvite[]>(`${this.BASE_URL}/user`)
+    return data
   }
 
   async deleteInvite(id: string) {

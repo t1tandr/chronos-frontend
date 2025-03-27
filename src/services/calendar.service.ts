@@ -13,6 +13,13 @@ class CalendarService {
     return await axiosWithAuth.get<ICalendar[]>(`${this.BASE_URL}`)
   }
 
+  async leaveCalendar(calendarId: string, userId: string) {
+    const { data } = await axiosWithAuth.delete(
+      `${this.BASE_URL}/${calendarId}/members/${userId}`
+    )
+    return data
+  }
+
   async getCalendarEvents(calendarId: string) {
     const { data } = await axiosWithAuth.get<IEvent[]>(
       `/calendars/${calendarId}/events`
@@ -27,9 +34,19 @@ class CalendarService {
       extendedProps: {
         description: event.description,
         category: event.category,
-        creator: event.creator
+        creator: event.creatorId
       }
     }))
+  }
+
+  async joinCalendar(id: string) {
+    const { data } = await axiosWithAuth.post(`${this.BASE_URL}/${id}/join`)
+    return data
+  }
+
+  async deleteCalendar(id: string) {
+    const { data } = await axiosWithAuth.delete(`${this.BASE_URL}/${id}`)
+    return data
   }
 
   async getUserCalendars(userId: string) {
@@ -41,7 +58,8 @@ class CalendarService {
   }
 
   async updateCalendar(id: string, dto: ICalendarDto) {
-    return await axiosWithAuth.post(`${this.BASE_URL}/${id}/update`, dto)
+    const { data } = await axiosWithAuth.patch(`${this.BASE_URL}/${id}`, dto)
+    return data
   }
 
   async getCalendarsByUserId(userId: string) {
@@ -50,6 +68,35 @@ class CalendarService {
 
   getCalendarById(id: string) {
     return axiosWithAuth.get(`${this.BASE_URL}/${id}`)
+  }
+
+  async searchCalendars(query: string) {
+    if (!query || query.length < 3) return []
+    const { data } = await axiosWithAuth.get(`${this.BASE_URL}/search`, {
+      params: { query }
+    })
+    return data
+  }
+
+  async updateMemberRole(
+    calendarId: string,
+    userId: string,
+    role: 'EDITOR' | 'VIEWER'
+  ) {
+    const { data } = await axiosWithAuth.patch(
+      `${this.BASE_URL}/${calendarId}/members/${userId}/role`,
+      {
+        role
+      }
+    )
+    return data
+  }
+
+  async removeMember(calendarId: string, userId: string) {
+    const { data } = await axiosWithAuth.delete(
+      `${this.BASE_URL}/${calendarId}/members/${userId}`
+    )
+    return data
   }
 }
 

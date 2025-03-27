@@ -8,9 +8,23 @@ export interface ICalendarDto {
 export interface ICalendar {
   id: string
   name: string
-  slug: string
   description?: string
+  slug: string
   color?: string
-  ownerId: string
   isPublic: boolean
+  ownerId: string
+  owner: {
+    id: string
+    name: string
+    email: string
+  }
+  members?: {
+    id: string
+    role: 'OWNER' | 'VIEWER' | 'EDITOR' | 'SELF_EDITOR'
+    user: {
+      id: string
+      name: string
+      email: string
+    }
+  }[]
 }
