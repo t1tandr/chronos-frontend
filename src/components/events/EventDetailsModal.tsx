@@ -26,7 +26,12 @@ export function EventDetailsModal({
   const queryClient = useQueryClient()
   const { user } = userStore()
 
-  const canEditEvent = canEdit || (canEditOwn && event.creatorId === user?.id)
+  const canEditEvent =
+    canEdit ||
+    (canEditOwn && event.creatorId === user?.id) ||
+    (calendar.members?.find(m => m.user.id === user?.id)?.role ===
+      'SELF_EDITOR' &&
+      event.creatorId === user?.id)
 
   const { mutate: deleteEvent } = useMutation({
     mutationFn: () => eventService.deleteEvent(event.id),

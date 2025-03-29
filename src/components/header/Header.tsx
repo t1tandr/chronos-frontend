@@ -18,7 +18,7 @@ export function Header() {
             href='/'
             className='text-2xl font-bold text-white hover:text-primary/90 transition-colors'
           >
-            CHRONOS
+            NPPLANNER
           </Link>
 
           <SearchCalendars />

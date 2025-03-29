@@ -34,7 +34,7 @@ class CalendarService {
       extendedProps: {
         description: event.description,
         category: event.category,
-        creator: event.creatorId
+        creator: event.creator
       }
     }))
   }

@@ -16,7 +16,7 @@ const createEventSchema = z.object({
   startTime: z.string(),
   duration: z.number().min(1, 'Duration must be at least 1 minute'),
   color: z.string().optional(),
-  category: z.enum(['ARRANGMENT', 'TASK', 'REMINDER']).optional()
+  category: z.enum(['ARRANGEMENT', 'TASK', 'REMINDER']).optional()
 })
 
 type CreateEventFormType = z.infer<typeof createEventSchema>
@@ -193,8 +193,7 @@ export function CreateEventModal({
             {...register('category')}
             className='w-full mb-4 p-2 rounded bg-transparent border border-border'
           >
-            <option value=''>Select Category</option>
-            <option value='ARRANGMENT'>Meeting</option>
+            <option value='ARRANGEMENT'>Arrangement</option>
             <option value='TASK'>Task</option>
             <option value='REMINDER'>Reminder</option>
           </select>
